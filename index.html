@@ -3,21 +3,100 @@
     <head>
         <meta charset="utf-8">
         <title>Catawba Dictionary</title>
+				<link href="https://fonts.googleapis.com/css?family=Arimo|Merriweather|Montserrat|Open+Sans|Slabo+27px" rel="stylesheet">
 <style>
+	#searchBar{
+		width: 100%;
+		background-color: white;
+		/*position: fixed;*/
+		display: flex;
+		margin: 0px;
+		font-family: 'Slabo';
+	}
+
+	#search{
+		border-top: none;
+		border-left: none;
+		border-right: none;
+		border-bottom: 2px solid black;
+	}
+
+	#results {
+		display: flex;
+		flex-direction: column;
+
+	}
+
+	.result{
+		height: 100px;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-evenly;
+
+	}
+
+	.result:nth-child(even){
+		background-color: #eee;
+	}
+
+	.catawba{
+		font-size: 2em;
+		font-family: 'Arimo'
+	}
+
+	.english {
+		font-family: 'Slabo';
+	}
+
 </style>
     </head>
     <body>
-
+				<div id="searchBar">
         <input id="search" type="text"></input>
+				</div>
+				<div id="results"></div>
 
-        <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> -->
+
+        <script src="data.js"></script>
 <script>
 	const $ = document;
-	let searchEl = $.getElementById("search");
-	let handleSearch = () => {
-		console.log(searchEl.value);
+ 	const searchEl = $.getElementById("search");
+	const resultsEl = $.getElementById("results");
+
+	// REDO DATA GET WITH FIREBASE
+	const data = icons;
+
+	function findMatches(toMatch, data){
+		return data.filter(entry => {
+			const regex = new RegExp(toMatch, 'gi');
+			return entry.english.match(regex)
+		})
 	}
 
+	const handleSearch = () => {
+		const searchTerm = searchEl.value;
+		const matches = findMatches(searchTerm, data);
+		displayResults(matches);
+	}
+
+	const displayResults = (results) => {
+		console.log(results);
+		if(results.length > 0){
+			const html = results.map(result => {
+				return `
+				<li class="result">
+					<span class="catawba">${result.catawba}</span>
+					<span class="english">${result.english}</span>
+				</li>
+				`
+			}).join('');
+			resultsEl.innerHTML = html;
+		}else{
+			console.log("No Matches");
+			resultsEl.innerHTML = "";
+		}
+
+	}
 
 
 
@@ -25,6 +104,7 @@
 
 	searchEl.addEventListener("keyup", handleSearch);
 	searchEl.addEventListener("change", handleSearch);
+	searchEl.addEventListener("load", handleSearch);
 </script>
     </body>
 </html>
